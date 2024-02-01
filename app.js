@@ -5,7 +5,7 @@ const app = express();
 const PORT = 8000;
 
 // reading tours data (executed only once)(blocking code)
-const toursInfo = JSON.parse(
+let toursInfo = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`, 'utf-8'),
 );
 
@@ -77,6 +77,37 @@ app.get('/api/v1/tours/:id', (req, res) => {
       tour: reqTour,
     },
   });
+});
+
+app.delete('/api/v1/tours/:id', (req, res) => {
+  const { id } = req.params;
+
+  if (id > toursInfo.length) {
+    return res.status(404).json({
+      status: 'error',
+      message: 'unable to find the resource',
+    });
+  }
+
+  toursInfo = toursInfo.filter((tour) => tour.id != id);
+
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(toursInfo),
+    (err) => {
+      if (err) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'error while deleting resource',
+        });
+      }
+
+      return res.status(204).json({
+        status: 'success',
+        data: null,
+      });
+    },
+  );
 });
 
 app.listen(PORT, () => {
