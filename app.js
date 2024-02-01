@@ -58,6 +58,27 @@ app.post('/api/v1/tours', (req, res) => {
   );
 });
 
+// get tour with given id
+app.get('/api/v1/tours/:id', (req, res) => {
+  const { id } = req.params;
+
+  const reqTour = toursInfo.find((tour) => tour.id == id);
+
+  if (!reqTour) {
+    return res.status(404).json({
+      status: 'error',
+      message: 'invalid id',
+    });
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    data: {
+      tour: reqTour,
+    },
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on Port : ${PORT}`);
 });
