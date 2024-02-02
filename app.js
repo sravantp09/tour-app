@@ -1,10 +1,14 @@
 const express = require('express');
-const tourRoute = require('./toursRouter.js');
+const morgan = require('morgan');
+const tourRoute = require('./toursRoute.js');
+const userRoute = require('./userRoute.js');
 
 const app = express();
 const PORT = 8000;
 
 // middleware
+app.use(morgan('dev'));
+
 app.use(express.json());
 
 // custom middleware, triggers when request comes
@@ -20,6 +24,8 @@ app.use((req, res, next) => {
 
 // tour route
 app.use('/api/v1/tours', tourRoute);
+// user route
+app.use('/api/v1/users', userRoute);
 
 app.listen(PORT, () => {
   console.log(`Server is running on Port : ${PORT}`);
