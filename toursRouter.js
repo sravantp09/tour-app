@@ -11,6 +11,7 @@ router
   .route('/')
   // get all tours information
   .get((req, res) => {
+    console.log(req.requestTime);
     if (!toursInfo || toursInfo.length === 0)
       return res.status(404).json({
         status: 'error',
