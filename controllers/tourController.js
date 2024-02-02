@@ -5,6 +5,17 @@ let toursInfo = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`, 'utf-8'),
 );
 
+// middleware for checking the req.body data
+function checkBody(req, res, next) {
+  if (!req.body.name || !req.body.price || !req.body.duration) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'name, price & duration are required',
+    });
+  }
+  next();
+}
+
 function getAllTours(req, res) {
   console.log(req.requestTime);
   if (!toursInfo || toursInfo.length === 0)
@@ -106,4 +117,5 @@ module.exports = {
   createTour,
   getTour,
   deleteTour,
+  checkBody,
 };
