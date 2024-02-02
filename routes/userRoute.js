@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const usersData = JSON.parse(
-  fs.readFileSync(`${__dirname}/dev-data/data/users.json`, 'utf-8'),
+  fs.readFileSync(`${__dirname}/../dev-data/data/users.json`, 'utf-8'),
 );
 
 router

@@ -4,7 +4,7 @@ const router = express.Router();
 
 // reading tours data (executed only once)(blocking code)
 let toursInfo = JSON.parse(
-  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`, 'utf-8'),
+  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`, 'utf-8'),
 );
 
 router
@@ -36,7 +36,7 @@ router
 
     // updating tours file
     fs.writeFile(
-      `${__dirname}/dev-data/data/tours-simple.json`,
+      `${__dirname}/../dev-data/data/tours-simple.json`,
       JSON.stringify(toursInfo),
       (err) => {
         if (err) {
@@ -89,7 +89,7 @@ router
     toursInfo = toursInfo.filter((tour) => tour.id != id);
 
     fs.writeFile(
-      `${__dirname}/dev-data/data/tours-simple.json`,
+      `${__dirname}/../dev-data/data/tours-simple.json`,
       JSON.stringify(toursInfo),
       (err) => {
         if (err) {
