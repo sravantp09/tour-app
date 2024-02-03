@@ -6,9 +6,16 @@ const userRoute = require('./routes/userRoute.js');
 const app = express();
 
 // middleware
-app.use(morgan('dev'));
+
+// run morgan logger only when we are in development mode
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
 
 app.use(express.json());
+
+// making contents inside public directory available public
+app.use(express.static(`${__dirname}/public`));
 
 // custom middleware, triggers when request comes
 app.use((req, res, next) => {
