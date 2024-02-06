@@ -7,15 +7,15 @@ let toursInfo = JSON.parse(
 );
 
 // middleware for checking the req.body data
-function checkBody(req, res, next) {
-  if (!req.body.name || !req.body.price || !req.body.duration) {
+/*function checkBody(req, res, next) {
+  if (!req.body.name || !req.body.price) {
     return res.status(400).json({
       status: 'error',
       message: 'name, price & duration are required',
     });
   }
   next();
-}
+}*/
 
 function getAllTours(req, res) {
   console.log(req.requestTime);
@@ -33,39 +33,57 @@ function getAllTours(req, res) {
   });
 }
 
-function createTour(req, res) {
+async function createTour(req, res) {
+  // creating a new tour instance
+  try {
+    // saving data to the db
+    const newTour = await Tour.create(req.body);
+
+    return res.status(201).json({
+      status: 'success',
+      data: {
+        tour: newTour,
+      },
+    });
+  } catch (err) {
+    console.log(err.message);
+    return res.status(400).json({
+      status: 'failed',
+      message: err.message,
+    });
+  }
+
+  // const tour = new Tour({
+  //   name: req.body.name,
+  //   rating: req.body.rating,
+  //   price: req.body.price,
+  // });
+
+  // tour
+  //   .save()
+  //   .then((doc) => {
+  //     console.log('Created a new tour');
+  //     return res.status(201).json({
+  //       status: 'success',
+  //       data: {
+  //         tour: doc,
+  //       },
+  //     });
+  //   })
+  //   .catch((err) => {
+  //     console.log(err.message);
+  //     return res.status(404).json({
+  //       status: 'error',
+  //       message: err.message,
+  //     });
+  //   });
+
   /*const newTourId = toursInfo[toursInfo.length - 1].id + 1;
   const newTour = {
     id: newTourId,
     ...req.body,
   };
   toursInfo.push(newTour); */
-
-  // creating tour in the db
-  const tour = new Tour({
-    name: req.body.name,
-    rating: req.body.rating,
-    price: req.body.price,
-  });
-
-  tour
-    .save()
-    .then((doc) => {
-      console.log('Created a new tour');
-      return res.status(201).json({
-        status: 'success',
-        data: {
-          tour: doc,
-        },
-      });
-    })
-    .catch((err) => {
-      console.log(err.message);
-      return res.status(404).json({
-        status: 'error',
-        message: err.message,
-      });
-    });
 
   // updating tours file
   /*
@@ -145,5 +163,5 @@ module.exports = {
   createTour,
   getTour,
   deleteTour,
-  checkBody,
+  //checkBody,
 };

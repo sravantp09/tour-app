@@ -12,6 +12,7 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+// parsing request body
 app.use(express.json());
 
 // making contents inside public directory available public
