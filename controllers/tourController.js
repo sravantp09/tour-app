@@ -1,4 +1,5 @@
 const fs = require('fs');
+const Tour = require('../models/tourModel.js');
 
 // reading tours data (executed only once)(blocking code)
 let toursInfo = JSON.parse(
@@ -33,14 +34,41 @@ function getAllTours(req, res) {
 }
 
 function createTour(req, res) {
-  const newTourId = toursInfo[toursInfo.length - 1].id + 1;
+  /*const newTourId = toursInfo[toursInfo.length - 1].id + 1;
   const newTour = {
     id: newTourId,
     ...req.body,
   };
-  toursInfo.push(newTour);
+  toursInfo.push(newTour); */
+
+  // creating tour in the db
+  const tour = new Tour({
+    name: req.body.name,
+    rating: req.body.rating,
+    price: req.body.price,
+  });
+
+  tour
+    .save()
+    .then((doc) => {
+      console.log('Created a new tour');
+      return res.status(201).json({
+        status: 'success',
+        data: {
+          tour: doc,
+        },
+      });
+    })
+    .catch((err) => {
+      console.log(err.message);
+      return res.status(404).json({
+        status: 'error',
+        message: err.message,
+      });
+    });
 
   // updating tours file
+  /*
   fs.writeFile(
     `${__dirname}/../dev-data/data/tours-simple.json`,
     JSON.stringify(toursInfo),
@@ -58,7 +86,7 @@ function createTour(req, res) {
         },
       });
     },
-  );
+  );*/
 }
 
 function getTour(req, res) {
