@@ -17,7 +17,27 @@ let toursInfo = JSON.parse(
   next();
 }*/
 
-function getAllTours(req, res) {
+async function getAllTours(req, res) {
+  try {
+    // reading all tours using find() method
+    const tours = await Tour.find();
+
+    return res.status(200).json({
+      status: 'success',
+      results: tours.length,
+      data: {
+        tours,
+      },
+    });
+  } catch (err) {
+    console.log(err.message);
+    return res.status(404).json({
+      status: 'failed',
+      message: err.message,
+    });
+  }
+
+  /*
   console.log(req.requestTime);
   if (!toursInfo || toursInfo.length === 0)
     return res.status(404).json({
@@ -30,7 +50,49 @@ function getAllTours(req, res) {
     status: 'success',
     results: toursInfo?.length,
     data: { tours: toursInfo },
+  }); 
+  */
+}
+
+async function getTour(req, res) {
+  try {
+    const { id } = req.params;
+
+    const tour = await Tour.findById(id);
+
+    return res.status(200).json({
+      status: 'success',
+      data: {
+        tour,
+      },
+    });
+  } catch (err) {
+    console.log(err.message);
+    return res.status(404).json({
+      status: 'failed',
+      message: err.message,
+    });
+  }
+
+  /*
+  const { id } = req.params;
+
+  const reqTour = toursInfo.find((tour) => tour.id == id);
+
+  if (!reqTour) {
+    return res.status(404).json({
+      status: 'error',
+      message: 'invalid id',
+    });
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    data: {
+      tour: reqTour,
+    },
   });
+  */
 }
 
 async function createTour(req, res) {
@@ -105,26 +167,6 @@ async function createTour(req, res) {
       });
     },
   );*/
-}
-
-function getTour(req, res) {
-  const { id } = req.params;
-
-  const reqTour = toursInfo.find((tour) => tour.id == id);
-
-  if (!reqTour) {
-    return res.status(404).json({
-      status: 'error',
-      message: 'invalid id',
-    });
-  }
-
-  return res.status(200).json({
-    status: 'success',
-    data: {
-      tour: reqTour,
-    },
-  });
 }
 
 function deleteTour(req, res) {
