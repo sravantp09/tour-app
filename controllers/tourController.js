@@ -169,9 +169,33 @@ async function createTour(req, res) {
   );*/
 }
 
-function deleteTour(req, res) {
-  const { id } = req.params;
+async function deleteTour(req, res) {
+  try {
+    const { id } = req.params;
 
+    const tour = await Tour.findByIdAndDelete(id);
+
+    if (!tour) {
+      return res.status(404).json({
+        status: 'failed',
+        message: 'No tour found',
+      });
+    }
+
+    return res.status(204).json({
+      status: 'success',
+      data: null,
+    });
+  } catch (err) {
+    console.log(err.message);
+
+    return res.status(404).json({
+      status: 'failed',
+      message: err.message,
+    });
+  }
+
+  /*
   if (id > toursInfo.length) {
     return res.status(404).json({
       status: 'error',
@@ -198,6 +222,38 @@ function deleteTour(req, res) {
       });
     },
   );
+  */
+}
+
+async function updateTour(req, res) {
+  try {
+    const { id } = req.params;
+
+    const tour = await Tour.findByIdAndUpdate(id, req.body, {
+      new: true, // indicate return new document
+      runValidators: true,
+    });
+
+    if (!tour) {
+      return res.status(404).json({
+        status: 'failed',
+        message: 'No tour found',
+      });
+    }
+
+    return res.status(200).json({
+      status: 'success',
+      data: {
+        tour,
+      },
+    });
+  } catch (err) {
+    console.log(err.message);
+    return res.status(400).json({
+      status: 'failed',
+      message: err.message,
+    });
+  }
 }
 
 module.exports = {
@@ -205,5 +261,6 @@ module.exports = {
   createTour,
   getTour,
   deleteTour,
+  updateTour,
   //checkBody,
 };

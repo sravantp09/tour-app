@@ -5,6 +5,7 @@ const {
   createTour,
   getTour,
   deleteTour,
+  updateTour,
   //checkBody,
 } = require('../controllers/tourController.js');
 
@@ -15,6 +16,6 @@ router
   // creating new tour
   .post(/*checkBody,*/ createTour);
 
-router.route('/:id').get(getTour).delete(deleteTour);
+router.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
 
 module.exports = router;
