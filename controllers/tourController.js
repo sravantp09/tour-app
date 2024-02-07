@@ -2,9 +2,11 @@ const fs = require('fs');
 const Tour = require('../models/tourModel.js');
 
 // reading tours data (executed only once)(blocking code)
+/*
 let toursInfo = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`, 'utf-8'),
 );
+*/
 
 // middleware for checking the req.body data
 /*function checkBody(req, res, next) {
@@ -20,7 +22,18 @@ let toursInfo = JSON.parse(
 async function getAllTours(req, res) {
   try {
     // reading all tours using find() method
-    const tours = await Tour.find();
+    // const tours = await Tour.find().where('duration').gt(10);
+
+    const queryObj = { ...req.query }; // creating a copy
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+
+    excludedFields.forEach((el) => delete queryObj[el]); // removing excluded fields
+
+    // if req.query contains value then it wil return values based on that,
+    // else return all values
+    const toursQuery = Tour.find(queryObj); // BUILDING QUERY
+
+    const tours = await toursQuery; // EXECUTING QUERY
 
     return res.status(200).json({
       status: 'success',
