@@ -24,14 +24,22 @@ async function getAllTours(req, res) {
     // reading all tours using find() method
     // const tours = await Tour.find().where('duration').gt(10);
 
+    console.log(req.query);
+
     const queryObj = { ...req.query }; // creating a copy
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
 
     excludedFields.forEach((el) => delete queryObj[el]); // removing excluded fields
 
+    // fix for mongodb operator (adding  $)
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = JSON.parse(
+      queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`),
+    );
+
     // if req.query contains value then it wil return values based on that,
     // else return all values
-    const toursQuery = Tour.find(queryObj); // BUILDING QUERY
+    const toursQuery = Tour.find(queryStr); // BUILDING QUERY
 
     const tours = await toursQuery; // EXECUTING QUERY
 
