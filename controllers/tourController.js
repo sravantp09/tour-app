@@ -47,7 +47,21 @@ async function getAllTours(req, res) {
       toursQuery = toursQuery.sort('-createdAt'); // adding default sort ie, descending order of creation
     }
 
-    const tours = await toursQuery; // EXECUTING QUERY
+    // limiting the no.of tours that send back to the client
+    if (req.query.limit) {
+      toursQuery = toursQuery.limit(req.query.limit);
+    }
+
+    // limiting fields for the document
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').join(' ');
+      toursQuery = toursQuery.select(fields); // select() function will only select mentioned fields
+    } else {
+      // here we are excluding __v field in the doc by prefixing it by -
+      toursQuery = toursQuery.select('-__v');
+    }
+
+    const tours = await toursQuery; // EXECUTING QUERY (returns document)
 
     return res.status(200).json({
       status: 'success',
