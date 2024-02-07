@@ -24,8 +24,6 @@ async function getAllTours(req, res) {
     // reading all tours using find() method
     // const tours = await Tour.find().where('duration').gt(10);
 
-    console.log(req.query);
-
     const queryObj = { ...req.query }; // creating a copy
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
 
@@ -39,7 +37,15 @@ async function getAllTours(req, res) {
 
     // if req.query contains value then it wil return values based on that,
     // else return all values
-    const toursQuery = Tour.find(queryStr); // BUILDING QUERY
+    let toursQuery = Tour.find(queryStr); // BUILDING QUERY
+
+    // if sort exist in the query params, modify the query string with sort
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(',').join(' '); // handling multiple sort option (ie, /tours?sort=price,duration)
+      toursQuery = toursQuery.sort(sortBy);
+    } else {
+      toursQuery = toursQuery.sort('-createdAt'); // adding default sort ie, descending order of creation
+    }
 
     const tours = await toursQuery; // EXECUTING QUERY
 
