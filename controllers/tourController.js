@@ -1,5 +1,6 @@
 const fs = require('fs');
 const Tour = require('../models/tourModel.js');
+const { privateDecrypt } = require('crypto');
 
 // reading tours data (executed only once)(blocking code)
 /*
@@ -310,11 +311,20 @@ async function updateTour(req, res) {
   }
 }
 
+// alias router /top-5-cheap [This function prefil query params for this route]
+function aliasTopTours(req, res, next) {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  next();
+}
+
 module.exports = {
   getAllTours,
   createTour,
   getTour,
   deleteTour,
   updateTour,
+  aliasTopTours,
   //checkBody,
 };

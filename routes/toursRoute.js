@@ -6,6 +6,7 @@ const {
   getTour,
   deleteTour,
   updateTour,
+  aliasTopTours,
   //checkBody,
 } = require('../controllers/tourController.js');
 
@@ -15,6 +16,8 @@ router
   .get(getAllTours)
   // creating new tour
   .post(/*checkBody,*/ createTour);
+
+router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
 
 router.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
 
