@@ -47,11 +47,6 @@ async function getAllTours(req, res) {
       toursQuery = toursQuery.sort('-createdAt'); // adding default sort ie, descending order of creation
     }
 
-    // limiting the no.of tours that send back to the client
-    if (req.query.limit) {
-      toursQuery = toursQuery.limit(req.query.limit);
-    }
-
     // limiting fields for the document
     if (req.query.fields) {
       const fields = req.query.fields.split(',').join(' ');
@@ -59,6 +54,24 @@ async function getAllTours(req, res) {
     } else {
       // here we are excluding __v field in the doc by prefixing it by -
       toursQuery = toursQuery.select('-__v');
+    }
+
+    // setting default value to page and limit (for improving performance over large volume of data)
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 100;
+
+    const skip = (page - 1) * limit;
+
+    //  building query
+    toursQuery = toursQuery.skip(skip).limit(limit);
+
+    // validation for skipping
+    if (req.query.page) {
+      const numTours = await Tour.countDocuments(); // getting count of docs in the Tour collection
+
+      if (skip >= numTours) {
+        throw new Error("This page doesn't exist"); // this error will be catched by  catch block and send error response
+      }
     }
 
     const tours = await toursQuery; // EXECUTING QUERY (returns document)
