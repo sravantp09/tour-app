@@ -326,6 +326,46 @@ function aliasTopTours(req, res, next) {
   next();
 }
 
+// aggregating pipeline
+async function getTourStats(req, res) {
+  try {
+    const stats = await Tour.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 4.5 } },
+      },
+      {
+        $group: {
+          _id: '$difficulty',
+          numTours: { $sum: 1 }, // indicated add 1 for each document so we will get the count
+          numRatings: { $sum: '$ratingsQuantity' },
+          avgRating: { $avg: '$ratingsAverage' },
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' },
+        },
+      },
+      {
+        // sorting the result of the previous stage ie, $group
+        $sort: {
+          avgPrice: 1, // 1 indicate ascending order
+        },
+      },
+    ]);
+
+    return res.status(200).json({
+      status: 'success',
+      data: {
+        stats,
+      },
+    });
+  } catch (err) {
+    return res.status(404).json({
+      status: 'failed',
+      message: err.message,
+    });
+  }
+}
+
 module.exports = {
   getAllTours,
   createTour,
@@ -334,4 +374,5 @@ module.exports = {
   updateTour,
   aliasTopTours,
   //checkBody,
+  getTourStats,
 };
