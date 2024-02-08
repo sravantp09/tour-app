@@ -1,6 +1,5 @@
-const fs = require('fs');
 const Tour = require('../models/tourModel.js');
-const { privateDecrypt } = require('crypto');
+const APIFeatures = require('../utils/apiFeatures.js');
 
 // reading tours data (executed only once)(blocking code)
 /*
@@ -24,7 +23,7 @@ async function getAllTours(req, res) {
   try {
     // reading all tours using find() method
     // const tours = await Tour.find().where('duration').gt(10);
-
+    /*
     const queryObj = { ...req.query }; // creating a copy
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
 
@@ -39,26 +38,28 @@ async function getAllTours(req, res) {
     // if req.query contains value then it wil return values based on that,
     // else return all values
     let toursQuery = Tour.find(queryStr); // BUILDING QUERY
+    */
 
     // if sort exist in the query params, modify the query string with sort
-    if (req.query.sort) {
+    /*if (req.query.sort) {
       const sortBy = req.query.sort.split(',').join(' '); // handling multiple sort option (ie, /tours?sort=price,duration)
       toursQuery = toursQuery.sort(sortBy);
     } else {
       toursQuery = toursQuery.sort('-createdAt'); // adding default sort ie, descending order of creation
-    }
+    }*/
 
     // limiting fields for the document
+    /*
     if (req.query.fields) {
       const fields = req.query.fields.split(',').join(' ');
       toursQuery = toursQuery.select(fields); // select() function will only select mentioned fields
     } else {
       // here we are excluding __v field in the doc by prefixing it by -
       toursQuery = toursQuery.select('-__v');
-    }
+    }*/
 
     // setting default value to page and limit (for improving performance over large volume of data)
-    const page = req.query.page * 1 || 1;
+    /*const page = req.query.page * 1 || 1;
     const limit = req.query.limit * 1 || 100;
 
     const skip = (page - 1) * limit;
@@ -73,9 +74,15 @@ async function getAllTours(req, res) {
       if (skip >= numTours) {
         throw new Error("This page doesn't exist"); // this error will be catched by  catch block and send error response
       }
-    }
+    }*/
 
-    const tours = await toursQuery; // EXECUTING QUERY (returns document)
+    const features = new APIFeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+
+    const tours = await features.query; // EXECUTING QUERY (returns document)
 
     return res.status(200).json({
       status: 'success',
