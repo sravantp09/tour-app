@@ -366,6 +366,60 @@ async function getTourStats(req, res) {
   }
 }
 
+// function return number of tours per month in a given year
+async function getMonthlyPlan(req, res) {
+  try {
+    const year = req.params.year * 1; // converting to number
+
+    const plan = await Tour.aggregate([
+      {
+        $unwind: '$startDates',
+      },
+      {
+        // selecting docs with start date between JAN 1 and DEC 31 of the provided YEAR
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
+          },
+        },
+      },
+      {
+        $group: {
+          // extracting month from the start date and grouping the result
+          _id: { $month: '$startDates' },
+          numTours: { $sum: 1 },
+          tours: { $push: '$name' }, // taking name of each tour belongs the the specified month
+        },
+      },
+      {
+        $addFields: { month: '$_id' },
+      },
+      {
+        $project: {
+          _id: 0, // making _id not showup in the result
+        },
+      },
+      {
+        $sort: { month: 1 }, // sorting result based on month
+      },
+    ]);
+
+    return res.status(200).json({
+      status: 'success',
+      results: plan.length,
+      data: {
+        plan,
+      },
+    });
+  } catch (err) {
+    return res.status(404).json({
+      status: 'failed',
+      message: err.message,
+    });
+  }
+}
+
 module.exports = {
   getAllTours,
   createTour,
@@ -375,4 +429,5 @@ module.exports = {
   aliasTopTours,
   //checkBody,
   getTourStats,
+  getMonthlyPlan,
 };

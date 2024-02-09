@@ -8,6 +8,7 @@ const {
   updateTour,
   aliasTopTours,
   getTourStats,
+  getMonthlyPlan,
   //checkBody,
 } = require('../controllers/tourController.js');
 
@@ -21,6 +22,8 @@ router
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
 
 router.route('/tour-stats').get(getTourStats);
+
+router.route('/monthly-plan/:year').get(getMonthlyPlan);
 
 router.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
 
