@@ -116,6 +116,13 @@ tourSchema.post(/^find/, function (doc, next) {
   next();
 });
 
+// AGGREGATION MIDDLEWARE
+tourSchema.pre('aggregate', function (next) {
+  // this.pipeline() indicate the aggreggation stages array and we are adding new condition to the array
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  next();
+});
+
 // tour model
 const Tour = mongoose.model('Tour', tourSchema);
 
