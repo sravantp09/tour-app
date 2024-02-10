@@ -57,9 +57,13 @@ const tourSchema = new mongoose.Schema(
     },
     startDates: [Date],
     slug: String,
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
-    // schema options
+    // schema options (for  virtual property)
     toJSON: { virtuals: true }, // required for adding virtual properties in the result
     toObject: { virtuals: true },
   },
@@ -72,6 +76,7 @@ tourSchema.virtual('durationWeeks').get(function () {
 // DOCUMENT MIDDLEWARE
 //
 // pre -> indicated runs before saving/creating document in the db
+// save runs only for save and create won't run for insertMany
 tourSchema.pre('save', function (next) {
   console.log(this); /// this -> indicate the currently processed document before saving to the db
 
@@ -89,6 +94,24 @@ tourSchema.pre('save', function (next) {
 
 // post -> run after saving the document in the db
 tourSchema.post('save', function (doc, next) {
+  console.log(doc);
+  next();
+});
+
+// QUERY MIDDLEWARE
+//
+// this middleware runs before any find query
+// tourSchema.pre('find', function (next) {
+
+// ---->  /^find/ - means all query starts with find
+tourSchema.pre(/^find/, function (next) {
+  // here this indicate query obejct
+  this.find({ secretTour: { $ne: true } }); // filtering out tours which has secretTour set to true
+  next();
+});
+
+// run after any find query
+tourSchema.post(/^find/, function (doc, next) {
   console.log(doc);
   next();
 });
