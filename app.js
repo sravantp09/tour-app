@@ -5,7 +5,7 @@ const userRoute = require('./routes/userRoute.js');
 
 const app = express();
 
-// middleware
+// MIDDLEWARE
 
 // run morgan logger only when we are in development mode
 if (process.env.NODE_ENV === 'development') {
@@ -34,5 +34,13 @@ app.use((req, res, next) => {
 app.use('/api/v1/tours', tourRoute);
 // user route
 app.use('/api/v1/users', userRoute);
+
+// route that handles all unhandles routes
+app.all('*', (req, res) => {
+  res.status(404).json({
+    status: 'failed',
+    message: `Can't find ${req.originalUrl} on this server`,
+  });
+});
 
 module.exports = app;
