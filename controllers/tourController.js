@@ -1,5 +1,6 @@
 const Tour = require('../models/tourModel.js');
 const APIFeatures = require('../utils/apiFeatures.js');
+const AppError = require('../utils/appError.js');
 
 // reading tours data (executed only once)(blocking code)
 /*
@@ -116,11 +117,15 @@ async function getAllTours(req, res) {
   */
 }
 
-async function getTour(req, res) {
+async function getTour(req, res, next) {
   try {
     const { id } = req.params;
 
     const tour = await Tour.findById(id);
+
+    if (!tour) {
+      return next(new AppError(`No tour found with id ${id}`, 404));
+    }
 
     return res.status(200).json({
       status: 'success',
