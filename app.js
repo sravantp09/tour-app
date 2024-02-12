@@ -36,10 +36,32 @@ app.use('/api/v1/tours', tourRoute);
 app.use('/api/v1/users', userRoute);
 
 // route that handles all unhandles routes
-app.all('*', (req, res) => {
+app.all('*', (req, res, next) => {
+  /*
   res.status(404).json({
     status: 'failed',
     message: `Can't find ${req.originalUrl} on this server`,
+  });
+  */
+
+  // BUILDING ERROR
+  const err = new Error(`Can't find ${req.originalUrl} on this server`);
+  err.status = 'failed';
+  err.statusCode = 404;
+
+  next(err); // next with parameter indicates error (skip all other middleware if any after this and go straight to error
+  // handling middleware)
+});
+
+// ERROR HANDLING MIDDLEWARE
+
+app.use((err, req, res, next) => {
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || 'error';
+
+  res.status(err.statusCode).json({
+    status: err.status,
+    message: err.message,
   });
 });
 
