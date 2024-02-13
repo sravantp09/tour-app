@@ -93,7 +93,6 @@ async function getAllTours(req, res) {
       },
     });
   } catch (err) {
-    console.log(err.message);
     return res.status(404).json({
       status: 'failed',
       message: err.message,
@@ -134,11 +133,11 @@ async function getTour(req, res, next) {
       },
     });
   } catch (err) {
-    console.log(err.message);
-    return res.status(404).json({
-      status: 'failed',
-      message: err.message,
-    });
+    // return res.status(404).json({
+    //   status: 'failed',
+    //   message: err.message,
+    // });
+    return next(new AppError(err.message, 404));
   }
 
   /*
@@ -175,7 +174,6 @@ async function createTour(req, res) {
       },
     });
   } catch (err) {
-    console.log(err.message);
     return res.status(400).json({
       status: 'failed',
       message: err.message,
@@ -254,8 +252,6 @@ async function deleteTour(req, res) {
       data: null,
     });
   } catch (err) {
-    console.log(err.message);
-
     return res.status(404).json({
       status: 'failed',
       message: err.message,
@@ -315,7 +311,6 @@ async function updateTour(req, res) {
       },
     });
   } catch (err) {
-    console.log(err.message);
     return res.status(400).json({
       status: 'failed',
       message: err.message,
