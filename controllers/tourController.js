@@ -137,7 +137,7 @@ async function getTour(req, res, next) {
     //   status: 'failed',
     //   message: err.message,
     // });
-    return next(new AppError(err.message, 404));
+    return next(new AppError(err.message, 404, err));
   }
 
   /*
