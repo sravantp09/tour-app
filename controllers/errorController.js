@@ -30,7 +30,16 @@ function sendErrorProd(err, res) {
 }
 
 function handleCastError(err) {
-  return new AppError(`Invaid ${err.path} : ${err.value}`, 404);
+  return new AppError(`Invaid ${err.path} : ${err.value}`, 400);
+}
+
+function handleDuplicateFieldsDB(err) {
+  // finding the text from the error message
+  const value = err.message.match(/(["'])(?:(?=(\\?))\2.)*?\1/)[0].slice(1, -1);
+  return new AppError(
+    `Duplicate Field value: ${value}, please use another value`,
+    400,
+  );
 }
 
 module.exports = (err, req, res, next) => {
@@ -39,11 +48,15 @@ module.exports = (err, req, res, next) => {
   err.name = err.fullError.name || undefined;
   err.path = err.fullError.path || undefined;
   err.value = err.fullError.value || undefined;
+  err.code = err.fullError.code || undefined;
+  err.message = err.fullError.message || '';
 
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
     if (err.name === 'CastError') err = handleCastError(err);
+
+    if (err.code === 11000) err = handleDuplicateFieldsDB(err);
     sendErrorProd(err, res);
   }
 };

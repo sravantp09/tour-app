@@ -161,7 +161,7 @@ async function getTour(req, res, next) {
   */
 }
 
-async function createTour(req, res) {
+async function createTour(req, res, next) {
   // creating a new tour instance
   try {
     // saving data to the db
@@ -174,10 +174,11 @@ async function createTour(req, res) {
       },
     });
   } catch (err) {
-    return res.status(400).json({
-      status: 'failed',
-      message: err.message,
-    });
+    // return res.status(400).json({
+    //   status: 'failed',
+    //   message: err.message,
+    // });
+    return next(new AppError(err.message, 400, err));
   }
 
   // const tour = new Tour({
