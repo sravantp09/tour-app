@@ -42,6 +42,15 @@ function handleDuplicateFieldsDB(err) {
   );
 }
 
+function handleValidationError(err) {
+  // extracting error message from the error (since there can be mutiple validation error)
+  const errors = Object.values(err.fullError.errors).map(
+    (error) => error.properties.message,
+  );
+  const msg = `Invalid input data, ${errors.join('. ')}`;
+  return new AppError(msg, 400);
+}
+
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
@@ -57,6 +66,9 @@ module.exports = (err, req, res, next) => {
     if (err.name === 'CastError') err = handleCastError(err);
 
     if (err.code === 11000) err = handleDuplicateFieldsDB(err);
+
+    if (err.name === 'ValidationError') err = handleValidationError(err);
+
     sendErrorProd(err, res);
   }
 };
