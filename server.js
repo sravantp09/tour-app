@@ -6,18 +6,26 @@ const DB_CONNECTION = process.env.DB_CONNECTION;
 const PORT = process.env.PORT || 8000;
 
 // connection to the database
-mongoose
-  .connect(DB_CONNECTION)
-  .then((connection) => {
-    console.log('Database Connected...');
+mongoose.connect(DB_CONNECTION).then((connection) => {
+  console.log('Database Connected...');
+});
+// .catch((err) => {
+//   console.log(err.message);
+// });
 
-    // starting server only after successful db connection
-    if (connection) {
-      app.listen(PORT, () => {
-        console.log(`Server is running on Port : ${PORT}`);
-      });
-    }
-  })
-  .catch((err) => {
-    console.log(err.message);
+const server = app.listen(PORT, () => {
+  console.log(`Server is running on Port : ${PORT}`);
+});
+
+// HANDLING UNHANDLED REJECTIONS (global)
+// this gets executed when there is an unhandled promise rejection
+process.on('unhandledRejection', (err) => {
+  console.log(err.name, err.message);
+  // exiting application
+  console.log('Shutting the App...');
+
+  // giving time process pending requests if any before exiting the server
+  server.close(() => {
+    process.exit(1); // 1 - uncaught exception
   });
+});
