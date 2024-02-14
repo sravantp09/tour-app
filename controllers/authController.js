@@ -1,5 +1,6 @@
 const User = require('../models/userModel.js');
 const AppError = require('../utils/appError.js');
+const jwt = require('jsonwebtoken');
 
 async function signUp(req, res, next) {
   try {
@@ -11,8 +12,14 @@ async function signUp(req, res, next) {
       passwordConfirm: req.body.passwordConfirm,
     });
 
+    // CREATING A JWT TOKEN
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+
     return res.status(201).json({
       status: 'success',
+      token,
       data: {
         user: newUser,
       },
@@ -22,6 +29,14 @@ async function signUp(req, res, next) {
   }
 }
 
+async function login(req, res, next) {
+  try {
+    console.log(req.body);
+    const user = await User.findOne({ email: req.body.email });
+  } catch (err) {}
+}
+
 module.exports = {
   signUp,
+  login,
 };
