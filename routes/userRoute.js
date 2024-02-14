@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getAllUsers } = require('../controllers/userController.js');
-const { signUp } = require('../controllers/authController.js');
+const { signUp, login } = require('../controllers/authController.js');
 
 // middleware function
 function log(req, res, next) {
@@ -11,6 +11,9 @@ function log(req, res, next) {
 
 // signup route
 router.post('/signup', signUp);
+
+// login route
+router.post('/login', login);
 
 router
   .route('/')
