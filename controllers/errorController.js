@@ -54,11 +54,11 @@ function handleValidationError(err) {
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
-  err.name = err.fullError.name || undefined;
-  err.path = err.fullError.path || undefined;
-  err.value = err.fullError.value || undefined;
-  err.code = err.fullError.code || undefined;
-  err.message = err.fullError.message || '';
+  err.name = err.fullError?.name || 'undefined';
+  err.path = err.fullError?.path || undefined;
+  err.value = err.fullError?.value || undefined;
+  err.code = err.fullError?.code || undefined;
+  err.message = err.fullError?.message || 'Route not defined';
 
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, res);
