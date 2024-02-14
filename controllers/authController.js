@@ -4,7 +4,12 @@ const AppError = require('../utils/appError.js');
 async function signUp(req, res, next) {
   try {
     // creating a new user
-    const newUser = await User.create(req.body);
+    const newUser = await User.create({
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
+      passwordConfirm: req.body.passwordConfirm,
+    });
 
     return res.status(201).json({
       status: 'success',
