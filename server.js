@@ -1,4 +1,12 @@
 require('dotenv').config({ path: '.env' });
+
+// catches all uncaught errors in synchronous code (inorder to catch error it must be before the error happening)
+process.on('uncaughtException', (err) => {
+  console.log('UNCAUGHT EXCEPTION, Shutting down...');
+  console.log(err.name, '-', err.message);
+  process.exit(1);
+});
+
 const app = require('./app.js');
 const mongoose = require('mongoose');
 
@@ -29,3 +37,5 @@ process.on('unhandledRejection', (err) => {
     process.exit(1); // 1 - uncaught exception
   });
 });
+
+//console.log(x)  - throws error  because x is not define and it will be handled by uncaughtException handler
