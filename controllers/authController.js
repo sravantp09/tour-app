@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const User = require('../models/userModel.js');
 const AppError = require('../utils/appError.js');
 const jwt = require('jsonwebtoken');
@@ -67,7 +68,38 @@ async function login(req, res, next) {
   }
 }
 
+// PROTECTED ROUTE(MIDDLEWARE)
+async function protect(req, res, next) {
+  try {
+    let token;
+    const { authorization } = req.headers;
+
+    if (authorization && authorization.startsWith('Bearer')) {
+      token = authorization.split(' ')[1]; // removing Bearer part
+    }
+
+    // if not token sent, then it will throw unauthorized access error like below
+    if (!token) {
+      const err = new Error(
+        'You are not logged In! Please login to get access',
+      );
+      err.statusCode = 401;
+      throw err;
+    }
+
+    // token verification
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+    console.log(decoded);
+
+    next();
+  } catch (err) {
+    return next(new AppError(err.message, err.statusCode, err));
+  }
+}
+
 module.exports = {
   signUp,
   login,
+  protect,
 };

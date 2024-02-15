@@ -11,11 +11,12 @@ const {
   getMonthlyPlan,
   //checkBody,
 } = require('../controllers/tourController.js');
+const { protect } = require('../controllers/authController.js');
 
 router
   .route('/')
   // get all tours information
-  .get(getAllTours)
+  .get(protect, getAllTours)
   // creating new tour
   .post(/*checkBody,*/ createTour);
 
