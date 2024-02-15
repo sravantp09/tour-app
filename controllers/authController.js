@@ -17,6 +17,7 @@ async function signUp(req, res, next) {
       email: req.body.email,
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
+      passwordChangedAt: req.body.passwordChangedAt,
     });
 
     // CREATING A JWT TOKEN
@@ -90,8 +91,27 @@ async function protect(req, res, next) {
     // token verification
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
-    console.log(decoded);
+    // checking whether the user still exists or not (because there can be cases when token exits but user don't)
+    const user = await User.findById(decoded.id);
 
+    if (!user) {
+      const err = new Error('User not found, Please signup');
+      err.statusCode = 401;
+      throw err;
+    }
+
+    // Checking if the password has changed after issuing the token (prevent stealing)
+    const isChanged = user.changedPasswordAfter(decoded.iat);
+
+    if (isChanged) {
+      const err = new Error(
+        'User recenty changed the password! Please login again',
+      );
+      err.statusCode = 401;
+      throw err;
+    }
+
+    req.user = user;
     next();
   } catch (err) {
     return next(new AppError(err.message, err.statusCode, err));

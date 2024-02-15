@@ -42,6 +42,7 @@ const userSchema = new mongoose.Schema({
       message: "Password didn't match",
     },
   },
+  passwordChangedAt: Date, // will be created only when we update the password
 });
 
 // for encrypting password before saving (using document middleware)
@@ -67,6 +68,15 @@ userSchema.methods.checkPassword = async function (
   userPassword,
 ) {
   return await bcrypt.compare(candidatePassword, userPassword); // true / false
+};
+
+// checks whether the password has changed after issuing token
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const timeStamp = this.passwordChangedAt.getTime() / 1000;
+    return timeStamp > JWTTimestamp;
+  }
+  return false; // means not changed
 };
 
 // User model
