@@ -23,6 +23,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  role: {
+    type: String,
+    enum: {
+      values: ['user', 'guide', 'lead-guide', 'admin'],
+      message: 'Invalid role!',
+    },
+    default: 'user',
+  },
   password: {
     type: String,
     required: [true, 'Please provide a password'],
@@ -76,7 +84,7 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
     const timeStamp = this.passwordChangedAt.getTime() / 1000;
     return timeStamp > JWTTimestamp;
   }
-  return false; // means not changed
+  return false; // means password not changed
 };
 
 // User model

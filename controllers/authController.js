@@ -88,7 +88,7 @@ async function protect(req, res, next) {
       throw err;
     }
 
-    // token verification
+    // token verification (if the token is not verified it will then throw error)
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
     // checking whether the user still exists or not (because there can be cases when token exits but user don't)
@@ -118,8 +118,27 @@ async function protect(req, res, next) {
   }
 }
 
+// function that restrict access based on user roles
+function restrictTo(...roles) {
+  return async function (req, res, next) {
+    try {
+      //req.user available here because protect function from above runs before this function so there we are setting the user details to req object
+      if (!roles.includes(req.user.role)) {
+        const err = new Error('Permission denied');
+        err.statusCode = 403;
+        throw err;
+      }
+
+      next();
+    } catch (err) {
+      return next(new AppError(err.message, err.statusCode, err));
+    }
+  };
+}
+
 module.exports = {
   signUp,
   login,
   protect,
+  restrictTo,
 };

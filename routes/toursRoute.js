@@ -11,7 +11,7 @@ const {
   getMonthlyPlan,
   //checkBody,
 } = require('../controllers/tourController.js');
-const { protect } = require('../controllers/authController.js');
+const { protect, restrictTo } = require('../controllers/authController.js');
 
 router
   .route('/')
@@ -26,6 +26,10 @@ router.route('/tour-stats').get(getTourStats);
 
 router.route('/monthly-plan/:year').get(getMonthlyPlan);
 
-router.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
+router
+  .route('/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(protect, restrictTo('admin', 'lead-guide'), deleteTour);
 
 module.exports = router;
