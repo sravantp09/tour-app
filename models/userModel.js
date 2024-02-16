@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
@@ -51,6 +52,8 @@ const userSchema = new mongoose.Schema({
     },
   },
   passwordChangedAt: Date, // will be created only when we update the password
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
 // for encrypting password before saving (using document middleware)
@@ -85,6 +88,26 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
     return timeStamp > JWTTimestamp;
   }
   return false; // means password not changed
+};
+
+// function that generate password token
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  // encrypting reset token
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 mins after creation
+
+  console.log(resetToken);
+  console.log(this.passwordResetToken);
+  console.log(this.passwordResetExpires);
+
+  // we store encrypted token in db and plain token will send to client
+  return resetToken;
 };
 
 // User model

@@ -136,9 +136,42 @@ function restrictTo(...roles) {
   };
 }
 
+async function forgotPassword(req, res, next) {
+  try {
+    // 1) Getting user using email id
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      const err = new Error('Invalid email id, please try again');
+      err.statusCode = 404;
+      throw err;
+    }
+
+    const resetToken = user.createPasswordResetToken();
+
+    // saving changed made to the  user object
+
+    // { validateBeforeSave: false } - prevents running validators again
+    await user.save({ validateBeforeSave: false });
+
+    console.log(resetToken);
+
+    // 2) Generate random token
+
+    res.end('done');
+  } catch (err) {
+    return next(new AppError(err.message, err.statusCode, err));
+  }
+}
+
+function resetPassword(req, res, next) {}
+
 module.exports = {
   signUp,
   login,
   protect,
   restrictTo,
+  forgotPassword,
+  resetPassword,
 };
