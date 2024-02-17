@@ -2,6 +2,7 @@ const { promisify } = require('util');
 const User = require('../models/userModel.js');
 const AppError = require('../utils/appError.js');
 const jwt = require('jsonwebtoken');
+const sendEmail = require('../utils/email.js');
 
 function generateToken(userId) {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -140,7 +141,7 @@ async function forgotPassword(req, res, next) {
   try {
     // 1) Getting user using email id
     const { email } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }); // reading user document from the db
 
     if (!user) {
       const err = new Error('Invalid email id, please try again');
@@ -148,24 +149,50 @@ async function forgotPassword(req, res, next) {
       throw err;
     }
 
-    const resetToken = user.createPasswordResetToken();
+    // 2) Generate random token
+    const resetToken = user.createPasswordResetToken(); // this will update the user doc with two new properties related to password token
 
     // saving changed made to the  user object
-
     // { validateBeforeSave: false } - prevents running validators again
-    await user.save({ validateBeforeSave: false });
+    await user.save({ validateBeforeSave: false }); // saving after modification
 
-    console.log(resetToken);
+    // creating the reset password url
+    const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
 
-    // 2) Generate random token
+    const message = `Forgot your password, Submit a PATCH request with password and passwordConfirm to ${resetURL}`;
 
-    res.end('done');
+    try {
+      // sending mail
+      await sendEmail({
+        email: user.email,
+        subject: 'Your password reset token, valid for 10 mins only',
+        message,
+      });
+
+      res.status(200).json({
+        status: 'success',
+        message: 'Token sent to the mail',
+      });
+    } catch (error) {
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
+
+      await user.save({ validateBeforeSave: false });
+
+      return next(
+        new AppError('Unable to send mail, please retry later', 500, error),
+      );
+    }
   } catch (err) {
     return next(new AppError(err.message, err.statusCode, err));
   }
 }
 
-function resetPassword(req, res, next) {}
+function resetPassword(req, res, next) {
+  const { token } = req.params;
+  console.log(token);
+  res.end();
+}
 
 module.exports = {
   signUp,

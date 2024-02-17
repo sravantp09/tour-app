@@ -102,10 +102,6 @@ userSchema.methods.createPasswordResetToken = function () {
 
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 mins after creation
 
-  console.log(resetToken);
-  console.log(this.passwordResetToken);
-  console.log(this.passwordResetExpires);
-
   // we store encrypted token in db and plain token will send to client
   return resetToken;
 };
