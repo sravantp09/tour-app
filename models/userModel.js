@@ -73,6 +73,14 @@ userSchema.pre('save', async function (next) {
   }
 });
 
+userSchema.pre('save', function (next) {
+  // skipping the operation if the password is not modified or if the document is a new one.
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000; // subtracting 1000 milli sec to prevent time delay
+  next();
+});
+
 // INSTANCE METHOD
 userSchema.methods.checkPassword = async function (
   candidatePassword,
