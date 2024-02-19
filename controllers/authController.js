@@ -234,6 +234,45 @@ async function resetPassword(req, res, next) {
   }
 }
 
+async function updatePassword(req, res, next) {
+  try {
+    // we got it from the protect middleware (where we check if the user is logged in or not)
+    const { id } = req.user;
+
+    const user = await User.findById(id).select('+password');
+
+    if (!user) {
+      // error
+      const err = new Error('User not found');
+      err.statusCode = 400;
+      throw err;
+    }
+
+    if (!(await user.checkPassword(req.body.currentPassword, user.password))) {
+      //error
+      const err = new Error('Incorrect current password, please try again!');
+      err.statusCode = 401;
+      throw err;
+    }
+
+    // updating password (runs validators too, if we use UPDATE then validator won't run)
+    user.password = req.body.password;
+    user.passwordConfirm = req.body.passwordConfirm;
+
+    await user.save();
+
+    // CREATING A JWT TOKEN
+    const jwtToken = generateToken(user._id);
+
+    return res.status(200).json({
+      status: 'success',
+      token: jwtToken,
+    });
+  } catch (err) {
+    return next(new AppError(err.message, err.statusCode, err));
+  }
+}
+
 module.exports = {
   signUp,
   login,
@@ -241,4 +280,5 @@ module.exports = {
   restrictTo,
   forgotPassword,
   resetPassword,
+  updatePassword,
 };

@@ -6,6 +6,8 @@ const {
   login,
   forgotPassword,
   resetPassword,
+  updatePassword,
+  protect,
 } = require('../controllers/authController.js');
 
 // middleware function
@@ -26,6 +28,9 @@ router.post('/forgotPassword', forgotPassword);
 
 // received random token generated above + new password
 router.patch('/resetPassword/:token', resetPassword);
+
+// for updating user current password with new password
+router.patch('/updateMyPassword', protect, updatePassword);
 
 router
   .route('/')
