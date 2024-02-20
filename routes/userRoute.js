@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { getAllUsers, updateMe } = require('../controllers/userController.js');
+const {
+  getAllUsers,
+  updateMe,
+  deleteMe,
+} = require('../controllers/userController.js');
 const {
   signUp,
   login,
@@ -8,6 +12,7 @@ const {
   resetPassword,
   updatePassword,
   protect,
+  restrictTo,
 } = require('../controllers/authController.js');
 
 // middleware function
@@ -34,6 +39,9 @@ router.patch('/updateMyPassword', protect, updatePassword);
 
 // updating currenntly logged in  user details
 router.patch('/updateMe', protect, updateMe);
+
+// delete currently logged in user
+router.delete('/deleteMe', protect, deleteMe);
 
 router
   .route('/')

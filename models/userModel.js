@@ -50,10 +50,17 @@ const userSchema = new mongoose.Schema({
       },
       message: "Password didn't match",
     },
+    select: false,
   },
   passwordChangedAt: Date, // will be created only when we update the password
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    // used for disabling user
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 // for encrypting password before saving (using document middleware)
@@ -78,6 +85,12 @@ userSchema.pre('save', function (next) {
   if (!this.isModified('password') || this.isNew) return next();
 
   this.passwordChangedAt = Date.now() - 1000; // subtracting 1000 milli sec to prevent time delay
+  next();
+});
+
+// QUERY MIDDLEWARE
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
   next();
 });
 

@@ -1,24 +1,17 @@
-const fs = require('fs');
 const AppError = require('../utils/appError.js');
 const User = require('../models/userModel');
 
-const usersData = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/users.json`, 'utf-8'),
-);
+async function getAllUsers(req, res) {
+  try {
+    const users = await User.find();
 
-function getAllUsers(req, res) {
-  if (!usersData || usersData.length === 0) {
-    return res.status(404).json({
-      status: 'error',
-      message: 'no data found',
+    res.status(200).json({
+      status: 'success',
+      data: {
+        users,
+      },
     });
-  }
-  return res.status(200).json({
-    status: 'success',
-    data: {
-      users: usersData,
-    },
-  });
+  } catch (err) {}
 }
 
 // updating currently logged in user  details
@@ -71,7 +64,26 @@ async function updateMe(req, res, next) {
   }
 }
 
+// delete current logged in user
+async function deleteMe(req, res, next) {
+  try {
+    const { id } = req.user;
+
+    await User.findByIdAndUpdate(id, { active: false });
+
+    res.status(204).json({
+      status: 'success',
+      data: null,
+    });
+  } catch (err) {
+    return next(
+      new AppError('Unable to delete user, please try again!', 400, err),
+    );
+  }
+}
+
 module.exports = {
   getAllUsers,
   updateMe,
+  deleteMe,
 };
