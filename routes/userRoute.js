@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAllUsers } = require('../controllers/userController.js');
+const { getAllUsers, updateMe } = require('../controllers/userController.js');
 const {
   signUp,
   login,
@@ -31,6 +31,9 @@ router.patch('/resetPassword/:token', resetPassword);
 
 // for updating user current password with new password
 router.patch('/updateMyPassword', protect, updatePassword);
+
+// updating currenntly logged in  user details
+router.patch('/updateMe', protect, updateMe);
 
 router
   .route('/')
