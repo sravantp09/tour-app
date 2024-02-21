@@ -5,6 +5,12 @@ const AppError = require('../utils/appError.js');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/email.js');
 
+const cookieOptions = {
+  expiresIn: '10h',
+  // secure: true, --> means cookie will create and send only if we use https instead http
+  httpOnly: true,
+};
+
 function generateToken(userId) {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -26,6 +32,9 @@ async function signUp(req, res, next) {
     const token = generateToken(newUser._id);
 
     newUser.password = undefined;
+
+    // create and send cookie
+    res.cookie('jwt', token, cookieOptions);
 
     return res.status(201).json({
       status: 'success',
@@ -61,6 +70,8 @@ async function login(req, res, next) {
 
     // CREATING A JWT TOKEN
     const token = generateToken(user._id);
+
+    res.cookie('jwt', token, cookieOptions);
 
     return res.status(200).json({
       status: 'success',
