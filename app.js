@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const rateLimit = require('express-rate-limit'); // RATE LIMITER
 const tourRoute = require('./routes/toursRoute.js');
 const userRoute = require('./routes/userRoute.js');
 
@@ -14,6 +15,16 @@ const app = express();
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+
+// rate limit configuration
+const limiter = rateLimit({
+  limit: 100,
+  windowMs: 60 * 60 * 1000, // indicate allows 100 reqs from same ip in 1 hour (in ms)
+  message: 'Too many requests from this ip, please try again after 1 hour.',
+});
+
+// RATE LIMITING  (applying rate limiter to only router that starts with 'api')
+app.use('/api', limiter);
 
 // parsing request body
 app.use(express.json());
