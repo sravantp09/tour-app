@@ -4,6 +4,7 @@ const rateLimit = require('express-rate-limit'); // RATE LIMITER
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const { xss } = require('express-xss-sanitizer');
+const hpp = require('hpp'); // prevent paramter pollution
 const tourRoute = require('./routes/toursRoute.js');
 const userRoute = require('./routes/userRoute.js');
 
@@ -41,6 +42,22 @@ app.use(mongoSanitize());
 
 // 2. against XSS (cross site scripting attack)
 app.use(xss());
+
+// prevent paramter pollution
+app.use(
+  hpp({
+    // means we don't remove duplicate values for whitelisted values
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'price',
+      'difficulty',
+    ],
+  }),
+);
+
 // making contents inside public directory available public
 app.use(express.static(`${__dirname}/public`));
 
