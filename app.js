@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit'); // RATE LIMITER
+const helmet = require('helmet');
 const tourRoute = require('./routes/toursRoute.js');
 const userRoute = require('./routes/userRoute.js');
 
@@ -10,6 +11,9 @@ const AppError = require('./utils/appError.js');
 const app = express();
 
 // MIDDLEWARE
+
+// helmet adds http security headers
+app.use(helmet());
 
 // run morgan logger only when we are in development mode
 if (process.env.NODE_ENV === 'development') {
@@ -27,7 +31,7 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 // parsing request body
-app.use(express.json());
+app.use(express.json({ limit: '10kb' })); // max size of body allowed is 10kb
 
 // making contents inside public directory available public
 app.use(express.static(`${__dirname}/public`));
