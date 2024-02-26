@@ -108,7 +108,8 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
-    guides: Array, // array stores user ids
+    // reference
+    guides: [{ type: mongoose.Schema.ObjectId, ref: 'User' }],
   },
   {
     // schema options (for  virtual property)
@@ -142,11 +143,13 @@ tourSchema.pre('save', function (next) {
 
 //[EMBEDDING DATA] ---------
 // fetching the actual documents before creating to db by using guides id provided
+/*
 tourSchema.pre('save', async function (next) {
   const guidesPromises = this.guides.map(async (id) => await User.findById(id)); // return promises only
   this.guides = await Promise.all(guidesPromises); // resolving promises
   next();
 });
+*/
 
 // post -> run after saving the document in the db
 tourSchema.post('save', function (doc, next) {

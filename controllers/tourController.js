@@ -120,7 +120,11 @@ async function getTour(req, res, next) {
   try {
     const { id } = req.params;
 
-    const tour = await Tour.findById(id);
+    // populate is used to fetch user details from the id given to the guides field
+    const tour = await Tour.findById(id).populate({
+      path: 'guides',
+      select: '-__v -passwordChangedAt', // excluding fields
+    });
 
     if (!tour) {
       return next(new AppError(`No tour found with id ${id}`, 404));
