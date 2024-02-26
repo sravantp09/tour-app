@@ -81,6 +81,32 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    // is and object which contains mutiple fields
+    startLocation: {
+      // mongodb supports location data(ie, coordinates) so we need to mention like below
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number], // for latitude and longitude values
+      address: String,
+      description: String,
+    },
+    // array of documents
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
   },
   {
     // schema options (for  virtual property)

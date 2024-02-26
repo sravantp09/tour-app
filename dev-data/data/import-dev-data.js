@@ -17,7 +17,7 @@ mongoose
 
 // array of tours
 const tourData = JSON.parse(
-  fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8'),
+  fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'),
 );
 
 async function uploadTourData() {
