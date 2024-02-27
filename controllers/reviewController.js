@@ -9,7 +9,10 @@ const createError = (message, statusCode) => {
 
 async function getAllReviews(req, res, next) {
   try {
-    const reviews = await Review.find().select('-__v');
+    // finding all reviews with the given tour id
+    const reviews = await Review.find({ tour: req.params.tourId }).select(
+      '-__v',
+    );
 
     if (reviews.length === 0) {
       const err = createError('Reviews not found', 404);
