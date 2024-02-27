@@ -122,6 +122,14 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
+// virtual populate
+tourSchema.virtual('review', {
+  ref: 'Review',
+  // connecting models Tour and Review
+  foreignField: 'tour', // field in the other document
+  localField: '_id', // ie, the _id value in the tour document is stored as tour field in the review document
+});
+
 // DOCUMENT MIDDLEWARE
 //
 // pre -> indicated runs before saving/creating document in the db

@@ -34,6 +34,22 @@ const reviewSchema = new mongoose.Schema(
   },
 );
 
+// middleware for populating user and tour fields in the review document
+reviewSchema.pre(/^find/, function (next) {
+  //   this.populate({
+  //     path: 'user',
+  //     select: 'name photo',
+  //   }).populate({
+  //     path: 'tour',
+  //     select: 'name',
+  //   });
+  this.populate({
+    path: 'user',
+    select: 'name photo',
+  });
+  next();
+});
+
 const Review = mongoose.model('Review', reviewSchema);
 
 module.exports = Review;
