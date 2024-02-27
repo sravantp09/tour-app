@@ -7,6 +7,7 @@ const { xss } = require('express-xss-sanitizer');
 const hpp = require('hpp'); // prevent paramter pollution
 const tourRoute = require('./routes/toursRoute.js');
 const userRoute = require('./routes/userRoute.js');
+const reviewRoute = require('./routes/reviewRoute.js');
 
 const globalErrorHandler = require('./controllers/errorController.js');
 const AppError = require('./utils/appError.js');
@@ -77,6 +78,8 @@ app.use((req, res, next) => {
 app.use('/api/v1/tours', tourRoute);
 // user route
 app.use('/api/v1/users', userRoute);
+
+app.use('/api/v1/reviews', reviewRoute);
 
 // route that handles all unhandles routes
 app.all('*', (req, res, next) => {
