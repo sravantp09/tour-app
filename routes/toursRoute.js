@@ -12,7 +12,11 @@ const {
   //checkBody,
 } = require('../controllers/tourController.js');
 const { protect, restrictTo } = require('../controllers/authController.js');
-const { createReview } = require('../controllers/reviewController.js');
+// const { createReview } = require('../controllers/reviewController.js');
+const reviewRouter = require('../routes/reviewRoute.js');
+
+// redirecting api call to review router
+router.use('/:tourId/reviews', reviewRouter);
 
 router
   .route('/')
@@ -34,8 +38,8 @@ router
   .delete(protect, restrictTo('admin', 'lead-guide'), deleteTour);
 
 // POST tours/34ggedhf (ie, tourId)/reviews
-router
-  .route('/:tourId/reviews')
-  .post(protect, restrictTo('user'), createReview);
+// router
+//   .route('/:tourId/reviews')
+//   .post(protect, restrictTo('user'), createReview);
 
 module.exports = router;
