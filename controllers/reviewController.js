@@ -30,7 +30,20 @@ async function getAllReviews(req, res, next) {
 
 async function createReview(req, res, next) {
   try {
+    // const newReview = await Review.create(req.body);
+
+    // allow nested routes
+    if (!req.body.tour) {
+      req.body.tour = req.params.tourId;
+    }
+
+    if (!req.body.user) {
+      req.body.user = req.user.id; // get from protect middleware
+    }
+
     const newReview = await Review.create(req.body);
+
+    newReview.__v = undefined;
 
     res.status(201).json({
       status: 'success',
