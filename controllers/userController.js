@@ -83,10 +83,44 @@ async function deleteMe(req, res, next) {
   }
 }
 
-module.exports = {
-  getAllUsers,
-  updateMe,
-  deleteMe,
-  deleteUser: deleteOne(User),
-  getOneUser: getOne(User),
+// function for getting currently logged in user details
+exports.getMe = async (req, res, next) => {
+  try {
+    const { id } = req.user;
+
+    const user = await User.findById(id).select('-__v');
+
+    if (!user) {
+      return res.status(404).json({
+        status: 'failed',
+        message: 'No information found',
+      });
+    }
+
+    return res.status(200).json({
+      status: 'success',
+      data: {
+        user,
+      },
+    });
+  } catch (err) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Something went wrong',
+    });
+  }
 };
+
+// module.exports = {
+//   getAllUsers,
+//   updateMe,
+//   deleteMe,
+//   deleteUser: deleteOne(User),
+//   getOneUser: getOne(User),
+// };
+
+exports.getAllUsers = getAllUsers;
+exports.updateMe = updateMe;
+exports.deleteMe = deleteMe;
+exports.deleteUser = deleteOne(User);
+exports.getOneUser = getOne(User);

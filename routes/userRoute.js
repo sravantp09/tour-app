@@ -6,7 +6,9 @@ const {
   deleteMe,
   deleteUser,
   getOneUser,
+  getMe,
 } = require('../controllers/userController.js');
+
 const {
   signUp,
   login,
@@ -49,6 +51,8 @@ router
   .route('/')
   // get all users information
   .get(log, getAllUsers); // attaching multiple middleware functions
+
+router.route('/me').get(protect, getMe);
 
 router
   .route('/:id')
