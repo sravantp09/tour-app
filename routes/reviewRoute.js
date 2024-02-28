@@ -4,6 +4,7 @@ const {
   getAllReviews,
   createReview,
   deleteReview,
+  updateReview,
 } = require('../controllers/reviewController.js');
 const { protect, restrictTo } = require('../controllers/authController.js');
 
@@ -13,7 +14,7 @@ router
   // only logged in user can create review and the role must be user
   .post(protect, restrictTo('user'), createReview);
 
-// delete review using id
-router.route('/:id').delete(protect, deleteReview);
+// delete and update review using id
+router.route('/:id').delete(protect, deleteReview).patch(protect, updateReview);
 
 module.exports = router;

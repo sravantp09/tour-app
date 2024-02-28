@@ -1,7 +1,7 @@
 const Tour = require('../models/tourModel.js');
 const APIFeatures = require('../utils/apiFeatures.js');
 const AppError = require('../utils/appError.js');
-const { deleteOne } = require('./handlerFactory.js');
+const { deleteOne, updateOne, createOne } = require('./handlerFactory.js');
 
 // reading tours data (executed only once)(blocking code)
 /*
@@ -167,7 +167,7 @@ async function getTour(req, res, next) {
   });
   */
 }
-
+/* REPLACED BY CREATEONE FACTORY FUNCTION
 async function createTour(req, res, next) {
   // creating a new tour instance
   try {
@@ -187,41 +187,42 @@ async function createTour(req, res, next) {
     // });
     return next(new AppError(err.message, 400, err));
   }
+  */
 
-  // const tour = new Tour({
-  //   name: req.body.name,
-  //   rating: req.body.rating,
-  //   price: req.body.price,
-  // });
+// const tour = new Tour({
+//   name: req.body.name,
+//   rating: req.body.rating,
+//   price: req.body.price,
+// });
 
-  // tour
-  //   .save()
-  //   .then((doc) => {
-  //     console.log('Created a new tour');
-  //     return res.status(201).json({
-  //       status: 'success',
-  //       data: {
-  //         tour: doc,
-  //       },
-  //     });
-  //   })
-  //   .catch((err) => {
-  //     console.log(err.message);
-  //     return res.status(404).json({
-  //       status: 'error',
-  //       message: err.message,
-  //     });
-  //   });
+// tour
+//   .save()
+//   .then((doc) => {
+//     console.log('Created a new tour');
+//     return res.status(201).json({
+//       status: 'success',
+//       data: {
+//         tour: doc,
+//       },
+//     });
+//   })
+//   .catch((err) => {
+//     console.log(err.message);
+//     return res.status(404).json({
+//       status: 'error',
+//       message: err.message,
+//     });
+//   });
 
-  /*const newTourId = toursInfo[toursInfo.length - 1].id + 1;
+/*const newTourId = toursInfo[toursInfo.length - 1].id + 1;
   const newTour = {
     id: newTourId,
     ...req.body,
   };
   toursInfo.push(newTour); */
 
-  // updating tours file
-  /*
+// updating tours file
+/*
   fs.writeFile(
     `${__dirname}/../dev-data/data/tours-simple.json`,
     JSON.stringify(toursInfo),
@@ -240,7 +241,7 @@ async function createTour(req, res, next) {
       });
     },
   );*/
-}
+//}
 // ----------------------------------------
 /* REPLACED BY FACTOY FUNCTION 
 
@@ -298,6 +299,7 @@ async function deleteTour(req, res) {
   );
 }*/
 
+/* REPACED BY UPDATEONE FACTORY FUNCTION
 async function updateTour(req, res) {
   try {
     const { id } = req.params;
@@ -327,6 +329,7 @@ async function updateTour(req, res) {
     });
   }
 }
+*/
 
 // alias router /top-5-cheap [This function prefil query params for this route]
 function aliasTopTours(req, res, next) {
@@ -432,10 +435,10 @@ async function getMonthlyPlan(req, res) {
 
 module.exports = {
   getAllTours,
-  createTour,
+  createTour: createOne(Tour),
   getTour,
   deleteTour: deleteOne(Tour), // To get the factory function
-  updateTour,
+  updateTour: updateOne(Tour),
   aliasTopTours,
   //checkBody,
   getTourStats,

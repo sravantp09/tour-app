@@ -1,6 +1,6 @@
 const Review = require('../models/reviewModel.js');
 const AppError = require('../utils/appError.js');
-const { deleteOne } = require('./handlerFactory.js');
+const { deleteOne, updateOne } = require('./handlerFactory.js');
 
 const createError = (message, statusCode) => {
   const error = new Error(message);
@@ -64,4 +64,5 @@ module.exports = {
   getAllReviews,
   createReview,
   deleteReview: deleteOne(Review),
+  updateReview: updateOne(Review),
 };
