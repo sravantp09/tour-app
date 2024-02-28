@@ -84,6 +84,8 @@ async function deleteMe(req, res, next) {
 }
 
 // function for getting currently logged in user details
+// here since we have getOne factory function for getting doc using id, we simply call this middleware to set the id params
+// so that getOne can operate without error
 exports.getMe = async (req, res, next) => {
   req.params.id = req.user.id;
   next();

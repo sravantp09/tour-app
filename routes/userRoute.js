@@ -38,6 +38,9 @@ router.post('/forgotPassword', forgotPassword);
 // received random token generated above + new password
 router.patch('/resetPassword/:token', resetPassword);
 
+// This makes all the routes defined will be executed only after this protected executed
+//router.use(protect);
+
 // for updating user current password with new password
 router.patch('/updateMyPassword', protect, updatePassword);
 
@@ -46,6 +49,9 @@ router.patch('/updateMe', protect, updateMe);
 
 // delete currently logged in user
 router.delete('/deleteMe', protect, deleteMe);
+
+// all the routes below this will execute only if it passes through these middleware
+router.use(protect, restrictTo('admin'));
 
 router
   .route('/')
