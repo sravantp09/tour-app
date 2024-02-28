@@ -1,6 +1,7 @@
 const Tour = require('../models/tourModel.js');
 const APIFeatures = require('../utils/apiFeatures.js');
 const AppError = require('../utils/appError.js');
+const { deleteOne } = require('./handlerFactory.js');
 
 // reading tours data (executed only once)(blocking code)
 /*
@@ -240,6 +241,8 @@ async function createTour(req, res, next) {
     },
   );*/
 }
+// ----------------------------------------
+/* REPLACED BY FACTOY FUNCTION 
 
 async function deleteTour(req, res) {
   try {
@@ -264,8 +267,9 @@ async function deleteTour(req, res) {
       message: err.message,
     });
   }
-
-  /*
+  */
+//----------------------------------------------
+/*
   if (id > toursInfo.length) {
     return res.status(404).json({
       status: 'error',
@@ -292,8 +296,7 @@ async function deleteTour(req, res) {
       });
     },
   );
-  */
-}
+}*/
 
 async function updateTour(req, res) {
   try {
@@ -431,7 +434,7 @@ module.exports = {
   getAllTours,
   createTour,
   getTour,
-  deleteTour,
+  deleteTour: deleteOne(Tour), // To get the factory function
   updateTour,
   aliasTopTours,
   //checkBody,
