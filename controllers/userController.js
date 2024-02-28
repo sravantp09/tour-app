@@ -1,6 +1,6 @@
 const AppError = require('../utils/appError.js');
 const User = require('../models/userModel');
-const { deleteOne } = require('./handlerFactory.js');
+const { deleteOne, getOne } = require('./handlerFactory.js');
 
 async function getAllUsers(req, res) {
   try {
@@ -88,4 +88,5 @@ module.exports = {
   updateMe,
   deleteMe,
   deleteUser: deleteOne(User),
+  getOneUser: getOne(User),
 };

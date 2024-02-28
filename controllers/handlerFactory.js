@@ -79,8 +79,38 @@ function createOne(Model) {
   };
 }
 
+function getOne(Model) {
+  return async function (req, res, next) {
+    try {
+      const { id } = req.params;
+
+      const doc = await Model.findById(id).select('-__v -passwordChangedAt');
+
+      if (!doc) {
+        res.status(404).json({
+          status: 'failed',
+          message: 'No document found',
+        });
+      }
+
+      res.status(200).json({
+        status: 'success',
+        data: {
+          data: doc,
+        },
+      });
+    } catch (err) {
+      res.status(400).json({
+        status: 'error',
+        message: 'Something went wrong',
+      });
+    }
+  };
+}
+
 module.exports = {
   deleteOne,
   updateOne,
   createOne,
+  getOne,
 };
