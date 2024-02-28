@@ -52,7 +52,7 @@ router
   // get all users information
   .get(log, getAllUsers); // attaching multiple middleware functions
 
-router.route('/me').get(protect, getMe);
+router.route('/me').get(protect, getMe, getOneUser);
 
 router
   .route('/:id')

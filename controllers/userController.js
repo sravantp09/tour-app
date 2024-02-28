@@ -85,30 +85,8 @@ async function deleteMe(req, res, next) {
 
 // function for getting currently logged in user details
 exports.getMe = async (req, res, next) => {
-  try {
-    const { id } = req.user;
-
-    const user = await User.findById(id).select('-__v');
-
-    if (!user) {
-      return res.status(404).json({
-        status: 'failed',
-        message: 'No information found',
-      });
-    }
-
-    return res.status(200).json({
-      status: 'success',
-      data: {
-        user,
-      },
-    });
-  } catch (err) {
-    return res.status(400).json({
-      status: 'error',
-      message: 'Something went wrong',
-    });
-  }
+  req.params.id = req.user.id;
+  next();
 };
 
 // module.exports = {
