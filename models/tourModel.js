@@ -118,6 +118,9 @@ const tourSchema = new mongoose.Schema(
   },
 );
 
+// INDEXES
+tourSchema.index({ price: 1, ratingsAverage: -1 }); // creating price index and 1 indicate ascending order
+
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
