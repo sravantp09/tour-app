@@ -75,9 +75,13 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
 };
 
 reviewSchema.post('save', function () {
-  // here this keyword is pointing to review document, to get Review model access here use this.constructor
+  // here 'this' keyword is pointing to review document, to get Review model access here use "this.constructor"
   this.constructor.calcAverageRatings(this.tour);
 });
+
+// For preventing mutiple reviews from the same user for the same tour
+// [The combination of tour and user here must be unique]
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
 
 const Review = mongoose.model('Review', reviewSchema);
 
