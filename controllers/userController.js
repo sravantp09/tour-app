@@ -1,4 +1,36 @@
+const multer = require('multer');
 const AppError = require('../utils/appError.js');
+
+// configuring multer storage
+const multerStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/img/users');
+  },
+
+  // determines the filename when storing the file
+  filename: function (req, file, cb) {
+    const extension = file.mimetype.split('/')[1];
+    cb(null, `user-${req.user.id}-${Date.now()}.${extension}`);
+  },
+});
+
+// checks if the file is an image or not
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    const err = new Error('Not an image, please upload only images.');
+    err.statusCode = 400;
+    cb(new AppError(err.message, err.statusCode, err), false);
+  }
+};
+
+// configuring multer with destination folder for storing (in disc)
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+
+// multer middleware
+exports.uploadUserPhoto = upload.single('photo');
+
 const User = require('../models/userModel');
 const { deleteOne, getOne } = require('./handlerFactory.js');
 
