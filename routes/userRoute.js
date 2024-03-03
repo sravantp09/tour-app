@@ -8,6 +8,7 @@ const {
   getOneUser,
   getMe,
   uploadUserPhoto,
+  resizeUserPhoto,
 } = require('../controllers/userController.js');
 
 const {
@@ -46,7 +47,7 @@ router.patch('/resetPassword/:token', resetPassword);
 router.patch('/updateMyPassword', protect, updatePassword);
 
 // updating currenntly logged in  user details
-router.patch('/updateMe', protect, uploadUserPhoto, updateMe);
+router.patch('/updateMe', protect, uploadUserPhoto, resizeUserPhoto, updateMe);
 
 // delete currently logged in user
 router.delete('/deleteMe', protect, deleteMe);

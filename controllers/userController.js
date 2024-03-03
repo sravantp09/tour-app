@@ -1,7 +1,10 @@
 const multer = require('multer');
+const sharp = require('sharp'); // image resizer package
 const AppError = require('../utils/appError.js');
 
 // configuring multer storage
+
+/*
 const multerStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'public/img/users');
@@ -13,6 +16,9 @@ const multerStorage = multer.diskStorage({
     cb(null, `user-${req.user.id}-${Date.now()}.${extension}`);
   },
 });
+*/
+
+const multerStorage = multer.memoryStorage(); // stored images in the memory buffer
 
 // checks if the file is an image or not
 const multerFilter = (req, file, cb) => {
@@ -30,6 +36,26 @@ const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 
 // multer middleware
 exports.uploadUserPhoto = upload.single('photo'); // [ 'photo' here means the field in the form data]
+
+// IMAGE RESIZING [middleware]
+exports.resizeUserPhoto = (req, res, next) => {
+  if (!req.file) return next();
+
+  // generating filename since we removed the multer disk storage option
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+  // image resizing happens here
+  sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    // entire path to the storage location needed here
+    .toFile(`public/img/users/${req.file.filename}`, (err, info) => {
+      //console.log(info);
+    });
+
+  next();
+};
 
 const User = require('../models/userModel');
 const { deleteOne, getOne } = require('./handlerFactory.js');
