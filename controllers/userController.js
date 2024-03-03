@@ -29,7 +29,7 @@ const multerFilter = (req, file, cb) => {
 const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 
 // multer middleware
-exports.uploadUserPhoto = upload.single('photo');
+exports.uploadUserPhoto = upload.single('photo'); // [ 'photo' here means the field in the form data]
 
 const User = require('../models/userModel');
 const { deleteOne, getOne } = require('./handlerFactory.js');
@@ -75,6 +75,11 @@ async function updateMe(req, res, next) {
 
     if (req.body.email && req.body.email !== user.email) {
       user.email = req.body.email;
+    }
+
+    // storing the user photoname in the db
+    if (req.file) {
+      user.photo = req.file.filename;
     }
 
     user.passwordConfirm = user.password; // for making the validation pass, because passwordConfirm is a required field
