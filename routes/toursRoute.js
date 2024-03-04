@@ -9,6 +9,8 @@ const {
   aliasTopTours,
   getTourStats,
   getMonthlyPlan,
+  uploadTourImages,
+  resizeTourImages,
   //checkBody,
 } = require('../controllers/tourController.js');
 const { protect, restrictTo } = require('../controllers/authController.js');
@@ -36,7 +38,13 @@ router.route('/monthly-plan/:year').get(getMonthlyPlan);
 router
   .route('/:id')
   .get(getTour)
-  .patch(protect, restrictTo('admin', 'lead-guide'), updateTour)
+  .patch(
+    protect,
+    restrictTo('admin', 'lead-guide'),
+    uploadTourImages,
+    resizeTourImages,
+    updateTour,
+  )
   .delete(protect, restrictTo('admin', 'lead-guide'), deleteTour);
 
 // POST tours/34ggedhf (ie, tourId)/reviews

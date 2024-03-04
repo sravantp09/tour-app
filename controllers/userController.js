@@ -38,14 +38,14 @@ const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 exports.uploadUserPhoto = upload.single('photo'); // [ 'photo' here means the field in the form data]
 
 // IMAGE RESIZING [middleware]
-exports.resizeUserPhoto = (req, res, next) => {
+exports.resizeUserPhoto = async (req, res, next) => {
   if (!req.file) return next();
 
   // generating filename since we removed the multer disk storage option
   req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
 
   // image resizing happens here
-  sharp(req.file.buffer)
+  await sharp(req.file.buffer)
     .resize(500, 500)
     .toFormat('jpeg')
     .jpeg({ quality: 90 })

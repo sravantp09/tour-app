@@ -1,3 +1,5 @@
+const multer = require('multer');
+const sharp = require('sharp');
 const Tour = require('../models/tourModel.js');
 const APIFeatures = require('../utils/apiFeatures.js');
 const AppError = require('../utils/appError.js');
@@ -20,6 +22,71 @@ let toursInfo = JSON.parse(
   }
   next();
 }*/
+
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    const err = new Error('Not an image, please upload only images.');
+    err.statusCode = 400;
+    cb(new AppError(err.message, err.statusCode, err), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+const uploadTourImages = upload.fields([
+  {
+    name: 'imageCover',
+    maxCount: 1,
+  },
+  { name: 'images', maxCount: 3 },
+]);
+
+const resizeTourImages = async (req, res, next) => {
+  if (!req.files.imageCover || !req.files.images) return next();
+
+  // 1) Cover Image
+  // creating name for cover image
+  const imageCoverFilename = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
+
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(2000, 1333)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/tours/${imageCoverFilename}`, (err, info) => {
+      //console.log(info);
+    });
+
+  // adding cover image name to body so that when updating this will get pick up
+  req.body.imageCover = imageCoverFilename;
+
+  // 2) Images (tours)
+  req.body.images = [];
+
+  await Promise.all(
+    req.files.images.map(async (image, i) => {
+      const imageFilename = `tour-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
+
+      await sharp(image.buffer)
+        .resize(2000, 1333)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/tours/${imageFilename}`, (err, info) => {
+          //console.log(info);
+        });
+
+      req.body.images.push(imageFilename);
+    }),
+  );
+
+  next();
+};
 
 async function getAllTours(req, res) {
   try {
@@ -443,4 +510,6 @@ module.exports = {
   //checkBody,
   getTourStats,
   getMonthlyPlan,
+  uploadTourImages,
+  resizeTourImages,
 };
