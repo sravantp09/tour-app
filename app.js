@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const { xss } = require('express-xss-sanitizer');
 const hpp = require('hpp'); // prevent paramter pollution
+const cors = require('cors');
 const tourRoute = require('./routes/toursRoute.js');
 const userRoute = require('./routes/userRoute.js');
 const reviewRoute = require('./routes/reviewRoute.js');
@@ -15,6 +16,12 @@ const AppError = require('./utils/appError.js');
 const app = express();
 
 // MIDDLEWARE
+
+// CORS [by default only for GET AND POST]
+app.use(cors());
+
+// Enabing CORS for complex request like DELETE, PUT, PATCH
+app.options('*', cors());
 
 // helmet adds http security headers
 app.use(helmet());
