@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit'); // RATE LIMITER
@@ -15,7 +16,15 @@ const AppError = require('./utils/appError.js');
 
 const app = express();
 
+// USING PUG AS VIEW ENGINE
+app.set('view engine', 'pug');
+// Specifying where we placed all the templates/views
+app.set('views', path.join(__dirname, 'views'));
+
 // MIDDLEWARE
+
+// making contents inside public directory available public
+app.use(express.static(path.join(__dirname, 'public')));
 
 // CORS [by default only for GET AND POST]
 app.use(cors());
@@ -66,9 +75,6 @@ app.use(
   }),
 );
 
-// making contents inside public directory available public
-app.use(express.static(`${__dirname}/public`));
-
 // custom middleware, triggers when request comes
 app.use((req, res, next) => {
   console.log('Hello from Middleware...');
@@ -80,6 +86,9 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get('/', (req, res) => {
+  res.status(200).render('base'); // render method render the pug file with name base
+});
 // Mounting routes
 // tour route
 app.use('/api/v1/tours', tourRoute);
