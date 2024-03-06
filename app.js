@@ -87,7 +87,7 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res) => {
-  res.status(200).render('base'); // render method render the pug file with name base
+  res.status(200).render('base', { tour: 'The Forest Hiker' }); // render method render the pug file with name base
 });
 // Mounting routes
 // tour route
