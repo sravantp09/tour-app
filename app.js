@@ -10,6 +10,7 @@ const cors = require('cors');
 const tourRoute = require('./routes/toursRoute.js');
 const userRoute = require('./routes/userRoute.js');
 const reviewRoute = require('./routes/reviewRoute.js');
+const viewRoute = require('./routes/viewRoute.js');
 
 const globalErrorHandler = require('./controllers/errorController.js');
 const AppError = require('./utils/appError.js');
@@ -86,6 +87,7 @@ app.use((req, res, next) => {
   next();
 });
 
+/*
 app.get('/', (req, res) => {
   res.status(200).render('base', { tour: 'The Forest Hiker' }); // render method render the pug file with name base
 });
@@ -101,8 +103,11 @@ app.get('/tour', (req, res) => {
     title: 'The Forest Hiker',
   });
 });
+*/
 
 // Mounting routes
+// View router
+app.use('/', viewRoute);
 // tour route
 app.use('/api/v1/tours', tourRoute);
 // user route
@@ -125,7 +130,13 @@ app.all('*', (req, res, next) => {
   err.status = 'failed';
   err.statusCode = 404; */
 
-  next(new AppError(`Can't find ${req.originalUrl} on this server`, 404)); // next with parameter indicates error (skip all other middleware if any after this and go straight to error
+  next(
+    new AppError(
+      `Can't find ${req.originalUrl} on this server`,
+      404,
+      new Error(`Can't find ${req.originalUrl} on this server`),
+    ),
+  ); // next with parameter indicates error (skip all other middleware if any after this and go straight to error
   // handling middleware)
 });
 
