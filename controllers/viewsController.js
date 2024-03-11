@@ -16,6 +16,13 @@ exports.getOveriew = async (req, res, next) => {
   }
 };
 
-exports.getTour = (req, res) => {
-  res.status(200).render('tour');
+exports.getTour = async (req, res, next) => {
+  try {
+    const tour = await Tour.findOne({ slug: req.params.slug }).populate(
+      'review',
+    );
+    return res.status(200).render('tour', { tour });
+  } catch (err) {
+    next(new AppError('Not Found', 404, err));
+  }
 };
