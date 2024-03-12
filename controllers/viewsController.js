@@ -29,3 +29,12 @@ exports.getTour = async (req, res, next) => {
     next(new AppError('Not Found', 404, err));
   }
 };
+
+exports.getLoginForm = async (req, res, next) => {
+  try {
+    return res.status(200).render('login', { title: 'Login' });
+  } catch (err) {
+    console.log(err.message);
+    next(new AppError('Not Found', 404, err));
+  }
+};
