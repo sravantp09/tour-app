@@ -90,6 +90,8 @@ async function protect(req, res, next) {
 
     if (authorization && authorization.startsWith('Bearer')) {
       token = authorization.split(' ')[1]; // removing Bearer part
+    } else if (req.cookies.jwt) {
+      token = req.cookies.jwt;
     }
 
     // if not token sent, then it will throw unauthorized access error like below

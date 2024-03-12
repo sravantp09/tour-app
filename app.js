@@ -7,6 +7,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const { xss } = require('express-xss-sanitizer');
 const hpp = require('hpp'); // prevent paramter pollution
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const tourRoute = require('./routes/toursRoute.js');
 const userRoute = require('./routes/userRoute.js');
 const reviewRoute = require('./routes/reviewRoute.js');
@@ -30,11 +31,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 // CORS [by default only for GET AND POST]
 app.use(cors());
 
+// PARSE COOKIES FROM CLIENT SIDE AND ADD TO THE REQ OBJECT
+app.use(cookieParser());
+
 // Enabing CORS for complex request like DELETE, PUT, PATCH
 app.options('*', cors());
 
 // helmet adds http security headers
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  }),
+);
 
 // run morgan logger only when we are in development mode
 if (process.env.NODE_ENV === 'development') {
@@ -79,6 +87,7 @@ app.use(
 // custom middleware, triggers when request comes
 app.use((req, res, next) => {
   console.log('Hello from Middleware...');
+  console.log('Cookies:', req.cookies);
   next();
 });
 
