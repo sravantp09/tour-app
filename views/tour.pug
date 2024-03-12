@@ -3,6 +3,10 @@ extends base
 //- including mixin from different file
 include _reviewCard
 
+//- incuding javascript for the client side
+block append head
+    script(src='/js/mapbox.js' defer)
+
 //- mixin
 mixin overviewBox(label, text, icon)
     .overview-box__detail
@@ -75,7 +79,8 @@ block content
             img.picture-box__img.picture-box__img--3(src=`/img/tours/${tour.images[2]}`, alt=`${tour.name} 3`)
 
     section.section-map
-        #map
+        //- passing tour data to the client side so that js can read it via document
+        #map(data-locations=`${JSON.stringify(tour.locations)}`)
 
     section.section-reviews
         .reviews

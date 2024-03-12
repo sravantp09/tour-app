@@ -9,7 +9,10 @@ exports.getOveriew = async (req, res, next) => {
     // 2) build the tempate
 
     // 3) render the template
-    return res.status(200).render('overview', { title: 'All Tours', tours });
+    return res.status(200).render('overview', {
+      title: 'Exciting tours for adventurous people',
+      tours,
+    });
   } catch (err) {
     console.log(err.message);
     next(new AppError('Not Found', 404, err));
@@ -21,7 +24,7 @@ exports.getTour = async (req, res, next) => {
     const tour = await Tour.findOne({ slug: req.params.slug }).populate(
       'review guides',
     );
-    return res.status(200).render('tour', { tour });
+    return res.status(200).render('tour', { title: `${tour.name} tour`, tour });
   } catch (err) {
     next(new AppError('Not Found', 404, err));
   }
