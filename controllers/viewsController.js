@@ -19,7 +19,7 @@ exports.getOveriew = async (req, res, next) => {
 exports.getTour = async (req, res, next) => {
   try {
     const tour = await Tour.findOne({ slug: req.params.slug }).populate(
-      'review',
+      'review guides',
     );
     return res.status(200).render('tour', { tour });
   } catch (err) {
